@@ -1,5 +1,6 @@
 <?php
-require_once('conn.php'); 
+require_once('conn.php');
+require_once('utils.php');
 if(
     empty($_POST['username']) || 
     empty($_POST['password'])
@@ -22,11 +23,22 @@ if (!$result) {
     die($conn->error);
 }
 
+//login successfully, generate token and insert it to 'tokens'.
 if ($result->num_rows){
-    echo "登入成功";
-    $expires = time() + 3600*24*30;//let expire of cookie as one month.
-    $cookieName = "username";
-    setcookie($cookieName, $username, $expires);
+    $token = generateToken();
+    $token_sql = sprintf(
+        "INSERT INTO `tokens`(token, username) VALUES('%s', '%s')",
+        $token,
+        $username
+    );
+    $token_result = $conn->query($token_sql);
+    if(!$token_result){
+        die($conn->error);
+    }
+    //insert token by username successful.
+    $expires = time() + 3600 * 24 * 30;//let expire of cookie as one month.
+    $cookieName = "token";
+    setcookie($cookieName, $token, $expires);
     header("Location:index.php");
 }
 else{

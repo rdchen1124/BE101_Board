@@ -1,12 +1,18 @@
 <?php 
     require_once('conn.php');
+    require_once('utils.php');
     if(!empty($conn->error) ){
         echo "連線失敗!!<br>";
     }
-    $result = $conn->query("SELECT * FROM `comments`");
     $username = NULL;
-    if(!empty($_COOKIE['username'])){
-        $username = $_COOKIE['username'];
+    if(!empty($_COOKIE['token'])){
+        $token = $_COOKIE['token'];
+        $row = getUserFromToken($token);
+        $username = $row['username'];
+    }
+    $result = $conn->query("SELECT * FROM `comments` ORDER BY id DESC ");
+    if(!$result){
+        die('Error : ' . $conn->error);
     }
 ?>
 <!doctype html>
@@ -41,7 +47,7 @@
             ?>
             <form class='board__comment-form' method='POST' action='handle_add_comment.php'>
                 <textarea name='content' rows='4'></textarea>
-                <?php if(!empty($_COOKIE['username'])){ ?> 
+                <?php if($username){ ?> 
                     <input class='board__submit-btn' type='submit' />
                 <?php }else{ ?>
                     <h3> 請登入後再發布留言!! </h3>

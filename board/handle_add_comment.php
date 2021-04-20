@@ -1,20 +1,24 @@
 <?php
-require_once('conn.php'); 
+require_once('conn.php');
+require_once('utils.php');
 if(empty($_POST['content'])){
     header("Location:index.php?errorCode=1");
     die('資料不齊全');
 }
+//get username by token before query in 'users'. 
+$token = $_COOKIE['token'];
+$row = getUserFromToken($token);
 
-$username = $_COOKIE['username'];
-$findUser_sql = sprintf(
-    "SELECT nickname FROM `users` WHERE username = '%s'",
-    $username
-);
-$findUser_result = $conn->query($findUser_sql);
-if (!$findUser_result) {
-    die($conn->error);
-}
-$row = $findUser_result->fetch_assoc();
+// $username = $_COOKIE['username'];
+// $findUser_sql = sprintf(
+//     "SELECT nickname FROM `users` WHERE username = '%s'",
+//     $username
+// );
+// $findUser_result = $conn->query($findUser_sql);
+// if (!$findUser_result) {
+//     die($conn->error);
+// }
+// $row = $findUser_result->fetch_assoc();
 $nickname = $row['nickname'];
 
 $content = $_POST['content'];
