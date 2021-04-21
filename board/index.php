@@ -1,14 +1,13 @@
 <?php 
+    session_start();
     require_once('conn.php');
     require_once('utils.php');
     if(!empty($conn->error) ){
         echo "連線失敗!!<br>";
     }
     $username = NULL;
-    if(!empty($_COOKIE['token'])){
-        $token = $_COOKIE['token'];
-        $row = getUserFromToken($token);
-        $username = $row['username'];
+    if(!empty($_SESSION['username'])){
+        $username = $_SESSION['username'];
     }
     $result = $conn->query("SELECT * FROM `comments` ORDER BY id DESC ");
     if(!$result){

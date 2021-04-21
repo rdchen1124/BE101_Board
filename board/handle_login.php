@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once('conn.php');
 require_once('utils.php');
 if(
@@ -11,7 +12,7 @@ if(
 
 $username = $_POST['username'];
 $password = $_POST['password'];
-
+// check if username and password is match, or pop error.
 $sql = sprintf(
     "SELECT * FROM `users` WHERE username = '%s' AND password = '%s'",
     $username,
@@ -23,22 +24,10 @@ if (!$result) {
     die($conn->error);
 }
 
-//login successfully, generate token and insert it to 'tokens'.
+//login successfully, use session mechanism.
 if ($result->num_rows){
-    $token = generateToken();
-    $token_sql = sprintf(
-        "INSERT INTO `tokens`(token, username) VALUES('%s', '%s')",
-        $token,
-        $username
-    );
-    $token_result = $conn->query($token_sql);
-    if(!$token_result){
-        die($conn->error);
-    }
-    //insert token by username successful.
-    $expires = time() + 3600 * 24 * 30;//let expire of cookie as one month.
-    $cookieName = "token";
-    setcookie($cookieName, $token, $expires);
+    // set cookie by session.
+    $_SESSION['username'] = $username;
     header("Location:index.php");
 }
 else{

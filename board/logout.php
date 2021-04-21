@@ -1,15 +1,6 @@
 <?php
-require_once('conn.php');
-//Delete this token in 'tokens' when user logout.
-$token = $_COOKIE['token'];
-$sql = sprintf(
-    "DELETE FROM `tokens` WHERE token = '%s'",
-    $token
-);
-$conn->query($sql);
-
-$cookieName = "token";
-$expires = time() - 3600;
-setcookie($cookieName, "", $expires);
+session_start();
+session_destroy();
+// after delete seeion by session_destroy, go back to index.php.
 header("Location:index.php");
 ?>
