@@ -32,6 +32,7 @@
                     <a class='board__btn' href='login.php'>登入</a>
                 <?php }else{ ?>
                     <a class='board__btn' href='logout.php'>登出</a>
+                    <h3>您好, <?php echo $username ?></h3>
                 <?php } ?>
             </div>
             <h1 class='board__title'>Comments</h1>
@@ -70,29 +71,6 @@
                         </div>
                     </div>
                 <?php } ?>
-                <!-- <div class='card'>
-                    <div class='card__avatar'>
-
-                    </div>
-                    <div class='card__body'>
-                        <div class='card__info'>
-                            <span class='card__author'>Ryan</span>
-                            <span class='card__date'>2021-03-21 22:02:56</span>
-                        </div>
-                        <p class='card__content'>
-                            基本上，網站就是由許多標籤所建立的文件架構。<br>
-                            在HTML5中新增了語意化標籤(Semantic Elements)，<br>
-                            目的是為了讓標籤(Tag)更具意義，以加強文件的結構化，<br>
-                            讓搜尋引擎更清楚了解。<br>
-                            <br>
-                            舉例來說，<br>
-                            一個網頁通常會有最基本的區塊像是頁首、內容和頁尾等。<br>
-                            在HTML5之前只能通通用&lt div &gt標籤表示，<br>
-                            但HTML新增了語意化標籤像是&ltheader&gt、&ltmain&gt、&ltfooter&gt等，<br>
-                            可以更清楚表現網頁中每個區塊的設計目的。<br>
-                        </p>
-                    </div>
-                </div> -->
             </section>
         </main>
     </body>
