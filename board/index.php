@@ -62,11 +62,11 @@
                         </div>
                         <div class='card__body'>
                             <div class='card__info'>
-                                <span class='card__author'><?php echo $row['nickname']; ?></span>
-                                <span class='card__date'><?php echo $row['created_at']; ?></span>
+                                <span class='card__author'><?php echo escapeCharater($row['nickname']); ?></span>
+                                <span class='card__date'><?php echo escapeCharater($row['created_at']); ?></span>
                             </div>
                             <p class='card__content'>
-                                <?php echo $row['content']; ?>
+                                <?php echo escapeCharater($row['content']); ?>
                             </p>
                         </div>
                     </div>

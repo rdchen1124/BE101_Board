@@ -11,7 +11,6 @@ $username = $_SESSION['username'];
 $row = getUserFromUsername($username);
 
 $nickname = $row['nickname'];
-
 $content = $_POST['content'];
 $sql = sprintf(
     "INSERT INTO `comments`(nickname, content) VALUES ('%s','%s')",

@@ -15,4 +15,8 @@ function getUserFromUsername($username){
     $row = $result->fetch_assoc();
     return $row;
 }
+
+function escapeCharater($string){
+    return htmlspecialchars($string, ENT_QUOTES);
+}
 ?>
