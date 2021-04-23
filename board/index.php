@@ -9,10 +9,15 @@
     if(!empty($_SESSION['username'])){
         $username = $_SESSION['username'];
     }
-    $result = $conn->query("SELECT * FROM `comments` ORDER BY id DESC ");
+
+    $sql = "SELECT * FROM `comments` ORDER BY id DESC ";
+    $stmt = $conn->prepare($sql);
+    $result = $stmt->execute();
     if(!$result){
         die('Error : ' . $conn->error);
     }
+
+    $result = $stmt->get_result();
 ?>
 <!doctype html>
 <html lang="en">
