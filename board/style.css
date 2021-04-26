@@ -96,3 +96,9 @@ body {
 .card__date{
     color :thistle;
 }
+.board__nickname_form{
+    margin-top: 20px;
+}
+.hide{
+    display: none;
+}
