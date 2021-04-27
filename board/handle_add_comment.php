@@ -6,16 +6,13 @@ if(empty($_POST['content'])){
     header("Location:index.php?errorCode=1");
     die('資料不齊全');
 }
-//get username by session before query in 'users'. 
-$username = $_SESSION['username'];
-$row = getUserFromUsername($username);
 
-$nickname = $row['nickname'];
+$username = $_SESSION['username'];
 $content = $_POST['content'];
 
-$sql = "INSERT INTO `comments`(nickname, content) VALUES (?,?)";
+$sql = "INSERT INTO `comments`(username, content) VALUES (?,?)";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ss", $nickname, $content);
+$stmt->bind_param("ss", $username, $content);
 $result = $stmt->execute();
 if (!$result) {
     die($conn->error);

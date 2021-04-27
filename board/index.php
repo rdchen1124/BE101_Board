@@ -12,7 +12,9 @@
         $user = getUserFromUsername($username);
     }
     
-    $sql = "SELECT * FROM `comments` ORDER BY id DESC ";
+    $sql = "SELECT A.id AS id, A.content as content, A.created_at AS created_at, B.username AS username, B.nickname AS nickname ". 
+    "FROM `comments` AS A LEFT JOIN `users` AS B ".
+    "ON A.username = B.username ORDER BY id DESC";
     $stmt = $conn->prepare($sql);
     $result = $stmt->execute();
     if(!$result){
@@ -77,7 +79,10 @@
                         </div>
                         <div class='card__body'>
                             <div class='card__info'>
-                                <span class='card__author'><?php echo escapeCharater($row['nickname']); ?></span>
+                                <span class='card__author'>
+                                    <?php echo escapeCharater($row['nickname']); ?>
+                                    (@<?php echo escapeCharater($row['username']); ?>)
+                                </span>
                                 <span class='card__date'><?php echo escapeCharater($row['created_at']); ?></span>
                             </div>
                             <p class='card__content'>
