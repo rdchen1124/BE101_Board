@@ -84,6 +84,9 @@
                                     (@<?php echo escapeCharater($row['username']); ?>)
                                 </span>
                                 <span class='card__date'><?php echo escapeCharater($row['created_at']); ?></span>
+                                <?php if($row['username'] === $username){ ?>
+                                    <a href="update_comment.php?id=<?php echo $row['id']; ?>">編輯</a>
+                                <?php } ?>
                             </div>
                             <p class='card__content'>
                                 <?php echo escapeCharater($row['content']); ?>
