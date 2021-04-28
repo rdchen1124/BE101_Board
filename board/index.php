@@ -12,9 +12,11 @@
         $user = getUserFromUsername($username);
     }
     
-    $sql = "SELECT A.id AS id, A.content as content, A.created_at AS created_at, B.username AS username, B.nickname AS nickname ". 
-    "FROM `comments` AS A LEFT JOIN `users` AS B ".
-    "ON A.username = B.username ORDER BY id DESC";
+    $sql = "SELECT A.id AS id, A.content as content, A.created_at AS created_at, ".
+    "B.username AS username, B.nickname AS nickname FROM `comments` AS A LEFT JOIN `users` AS B ".
+    "ON A.username = B.username ".
+    "WHERE A.is_deleted is NULL ".
+    "ORDER BY id DESC";
     $stmt = $conn->prepare($sql);
     $result = $stmt->execute();
     if(!$result){
@@ -86,6 +88,7 @@
                                 <span class='card__date'><?php echo escapeCharater($row['created_at']); ?></span>
                                 <?php if($row['username'] === $username){ ?>
                                     <a href="update_comment.php?id=<?php echo $row['id']; ?>">編輯</a>
+                                    <a href="handle_delete_comment.php?id=<?php echo $row['id']; ?>">刪除</a>
                                 <?php } ?>
                             </div>
                             <p class='card__content'>
