@@ -12,12 +12,22 @@
         $user = getUserFromUsername($username);
     }
     
+    $page = 1;
+    if(!empty($_GET['page'])){
+        echo($_GET['page']);
+        $page = (int)$_GET['page'];
+    }
+    $limit = 5;
+    $offset = ($page-1)*$limit;
+
     $sql = "SELECT A.id AS id, A.content as content, A.created_at AS created_at, ".
     "B.username AS username, B.nickname AS nickname FROM `comments` AS A LEFT JOIN `users` AS B ".
     "ON A.username = B.username ".
     "WHERE A.is_deleted is NULL ".
-    "ORDER BY id DESC";
+    "ORDER BY id DESC ".
+    "LIMIT ? OFFSET ? ";
     $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $limit, $offset);
     $result = $stmt->execute();
     if(!$result){
         die('Error : ' . $conn->error);
@@ -98,13 +108,50 @@
                     </div>
                 <?php } ?>
             </section>
+            <div class='board__hr'></div>
+            <?php 
+                $sql = "SELECT COUNT(id) AS count FROM `comments` WHERE is_deleted is NULL ";
+                $stmt = $conn->prepare($sql);
+                $result = $stmt->execute();
+                if(!$result){
+                    die('Error : ' . $conn->error);
+                }
+
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                $count = $row['count'];
+                $totol_page = ceil($count/$limit);
+            ?>
+            <div class='page-info'>
+                <span>總共 <?php echo $count ?> 筆留言，</span>
+                <span>第 <?php echo $page ?>頁 / 總共 <?php echo $totol_page ?> 頁</span>
+            </div>
+            <div class='paginator'>
+                <?php if($page != 1){ ?>
+                    <a href='index.php?page=1' >到首頁</a>
+                    <a href='index.php?page=<?php echo ($page-1)?>'>上一頁</a>
+                <?php } ?><?php if($page != $totol_page) { ?>
+                    <a href='index.php?page=<?php echo ($page+1)?>'>下一頁</a>
+                    <a href='index.php?page=<?php echo $totol_page?>'>到末頁</a>
+                <?php } ?>
+            </div>
         </main>
         <script>
-            var btn = document.querySelector(".update-nickname");
-            btn.addEventListener('click', function(){
-                var form = document.querySelector(".board__nickname_form");
-                form.classList.toggle('hide');
-            })
+            try {
+                var btn = document.querySelector(".update-nickname");
+                btn.addEventListener('click', function(){
+                    var form = document.querySelector(".board__nickname_form");
+                    form.classList.toggle('hide');
+                })
+            } catch (e) {
+                console.log(e);
+                console.log("未登入所以找不到 class=update-nickname 的 button");
+            }
+            // var btn = document.querySelector(".update-nickname");
+            // btn.addEventListener('click', function(){
+            //     var form = document.querySelector(".board__nickname_form");
+            //     form.classList.toggle('hide');
+            // })
         </script>
     </body>
 </html>

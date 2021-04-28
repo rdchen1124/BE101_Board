@@ -102,3 +102,18 @@ body {
 .hide{
     display: none;
 }
+.page-info{
+    text-align: center;
+}
+.paginator{
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+.paginator a{
+    text-decoration: none;
+    padding: 10px;
+    border: 1px solid #5c9edc;
+    border-radius: 5px;
+    background:lightyellow;    
+}
