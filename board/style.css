@@ -52,6 +52,7 @@ body {
     padding: 5px;
 }
 .board__submit-btn{
+    margin-top: 10px;
     padding: 10px;
     border: 1px solid #c2bffb;
     border-radius: 3px;

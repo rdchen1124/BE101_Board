@@ -12,9 +12,9 @@ $username = $_SESSION['username'];
 $is_deleted = 1;
 $id = $_GET['id'];
 
-$sql = "UPDATE `comments` SET is_deleted = ? WHERE id = ?";
+$sql = "UPDATE `comments` SET is_deleted = ? WHERE id = ? AND username = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ii", $is_deleted, $id);
+$stmt->bind_param("iis", $is_deleted, $id, $username);
 $result = $stmt->execute();
 if (!$result) {
     die($conn->error);

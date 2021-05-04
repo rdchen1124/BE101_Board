@@ -19,4 +19,5 @@ function getUserFromUsername($username){
 function escapeCharater($string){
     return htmlspecialchars($string, ENT_QUOTES);
 }
+
 ?>

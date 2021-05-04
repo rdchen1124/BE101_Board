@@ -14,7 +14,6 @@
     
     $page = 1;
     if(!empty($_GET['page'])){
-        echo($_GET['page']);
         $page = (int)$_GET['page'];
     }
     $limit = 5;
@@ -147,11 +146,6 @@
                 console.log(e);
                 console.log("未登入所以找不到 class=update-nickname 的 button");
             }
-            // var btn = document.querySelector(".update-nickname");
-            // btn.addEventListener('click', function(){
-            //     var form = document.querySelector(".board__nickname_form");
-            //     form.classList.toggle('hide');
-            // })
         </script>
     </body>
 </html>
