@@ -7,9 +7,11 @@
     }
     $username = NULL;
     $user = NULL;
+    $ctrl_right = 0;
     if(!empty($_SESSION['username'])){
         $username = $_SESSION['username'];
         $user = getUserFromUsername($username);
+        $ctrl_right = getCtrlRightFromUsername($username);
     }
     
     $page = 1;
@@ -19,9 +21,11 @@
     $limit = 5;
     $offset = ($page-1)*$limit;
 
+    // $ctrl_right = 2;
+
     $sql = "SELECT A.id AS id, A.content as content, A.created_at AS created_at, ".
-    "B.username AS username, B.nickname AS nickname FROM `comments` AS A LEFT JOIN `users` AS B ".
-    "ON A.username = B.username ".
+    "B.username AS username, B.nickname AS nickname, B.ctrl_right AS ctrl_right FROM `comments` AS A ".
+    "LEFT JOIN `users` AS B ON A.username = B.username ".
     "WHERE A.is_deleted is NULL ".
     "ORDER BY id DESC ".
     "LIMIT ? OFFSET ? ";
@@ -31,7 +35,6 @@
     if(!$result){
         die('Error : ' . $conn->error);
     }
-
     $result = $stmt->get_result();
 ?>
 <!doctype html>
@@ -67,17 +70,25 @@
             <?php
                 if(!empty($_GET['errorCode'])){
                     $code = $_GET['errorCode'];
-                    $msg = "資料有誤";
+                    $msg = "Default";
                     if($code == '1'){
-                        echo "<h2 class='error'>".$msg."</h2>";
+                        $msg = "資料有誤";
                     }
+                    if($code == '2'){
+                        $msg = "權限有誤";
+                    }
+                    echo "<h2 class='error'>".$msg."</h2>";
                 }
             ?>
             <form class='board__comment-form' method='POST' action='handle_add_comment.php'>
                 <textarea name='content' rows='4'></textarea>
-                <?php if($username){ ?> 
+                <?php if($username){ 
+                    if($ctrl_right >= 1){ ?> 
                     <input class='board__submit-btn' type='submit' />
                 <?php }else{ ?>
+                    <h3> 抱歉 <?php echo $user['nickname'] ?> ， 您已被停權，無法發布留言!! </h3>
+                <?php } 
+                    }else{ ?>
                     <h3> 請登入後再發布留言!! </h3>
                 <?php } ?>
             </form>
@@ -95,7 +106,7 @@
                                     (@<?php echo escapeCharater($row['username']); ?>)
                                 </span>
                                 <span class='card__date'><?php echo escapeCharater($row['created_at']); ?></span>
-                                <?php if($row['username'] === $username){ ?>
+                                <?php if($row['username'] === $username || $ctrl_right == 2){ ?>
                                     <a href="update_comment.php?id=<?php echo $row['id']; ?>">編輯</a>
                                     <a href="handle_delete_comment.php?id=<?php echo $row['id']; ?>">刪除</a>
                                 <?php } ?>
