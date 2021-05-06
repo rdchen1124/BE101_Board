@@ -118,3 +118,15 @@ body {
     border-radius: 5px;
     background:lightyellow;    
 }
+.role_row {
+    margin: 10px 0;
+    min-height: 70px;
+    display: flex;
+}
+.role_col {
+    padding: 10px;
+    margin: 10px 0;
+    min-width: 100px;
+    text-align: center;
+    border: 1px solid lightseagreen;
+}

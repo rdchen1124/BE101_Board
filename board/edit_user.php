@@ -14,6 +14,11 @@
         $ctrl_right = getCtrlRightFromUsername($username);
     }
     
+    //將編輯使用者權限頁面依 $ctrl_right 卡控
+    if($ctrl_right != 2){
+        header("Location: index.php?errorCode=2");
+        die('您的權限不符，不允許進入此頁面');
+    }
     //for 翻頁功能
     $page = 1;
     if(!empty($_GET['page'])){
@@ -21,15 +26,11 @@
     }
     $limit = 5;
     $offset = ($page-1)*$limit;
-    // sql for 從 comments 資料表依 username 欄位關聯到 users 資料表，並取出對應 nickname
-    $sql = "SELECT A.id AS id, A.content as content, A.created_at AS created_at, ".
-    "B.username AS username, B.nickname AS nickname, B.ctrl_right AS ctrl_right FROM `comments` AS A ".
-    "LEFT JOIN `users` AS B ON A.username = B.username ".
-    "WHERE A.is_deleted is NULL ".
-    "ORDER BY id DESC ".
-    "LIMIT ? OFFSET ? ";
+    // sql for 從 users 資料表取出對應  username, nickname, ctrl_right
+    $sql = "SELECT username, nickname, ctrl_right FROM `users`";
+    // $sql = "SELECT username, nickname, ctrl_right FROM `users` LIMIT ? OFFSET ? ";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $limit, $offset);
+    // $stmt->bind_param("ii", $limit, $offset);
     $result = $stmt->execute();
     if(!$result){
         die('Error : ' . $conn->error);
@@ -49,26 +50,10 @@
         </header>
         <main class='board'>
             <div>
-                <?php if(!$username){ ?> 
-                    <a class='board__btn' href='register.php'>註冊</a>
-                    <a class='board__btn' href='login.php'>登入</a>
-                <?php }else{ ?>
-                    <a class='board__btn' href='logout.php'>登出</a>
-                    <?php if($ctrl_right == 2){ ?>
-                        <a class='board__btn' href='edit_user.php'>管理使用者</a>
-                    <?php } ?>
-                    <span class='board__btn update-nickname'>編輯暱稱</span>
-                    <form class='hide board__nickname_form board__comment-form' method='POST' action='handle_update_nickname.php'>
-                        <div class='board__nickname'>
-                            <span>新的暱稱 : </span>
-                            <input type='text' name='nickname'/>
-                        </div>
-                        <input class='board__submit-btn' type='submit' />
-                    </form>
-                    <h3>您好, <?php echo $user['nickname'] ?></h3>
-                <?php } ?>
+                <a class='board__btn' href='index.php'>返回首頁</a>
+                <h3>您好, <?php echo $user['nickname'] ?></h3>
             </div>
-            <h1 class='board__title'>Comments</h1>
+            <h1 class='board__title'>管理使用者權限</h1>
             <?php
                 if(!empty($_GET['errorCode'])){
                     $code = $_GET['errorCode'];
@@ -82,7 +67,7 @@
                     echo "<h2 class='error'>".$msg."</h2>";
                 }
             ?>
-            <form class='board__comment-form' method='POST' action='handle_add_comment.php'>
+            <!-- <form class='board__comment-form' method='POST' action='handle_add_comment.php'>
                 <textarea name='content' rows='4'></textarea>
                 <?php if($username){ 
                     if($ctrl_right >= 1){ ?> 
@@ -94,33 +79,48 @@
                     <h3> 請登入後再發布留言!! </h3>
                 <?php } ?>
             </form>
-            <div class='board__hr'></div>
+            <div class='board__hr'></div> -->
             <section>
                 <?php while($row = $result->fetch_assoc()){ ?>
-                    <div class='card'>
-                        <div class='card__avatar'>
-
+                    <!-- <tr>
+                        <td><?php echo escapeCharater($row['username']); ?></td>
+                        <td><?php echo escapeCharater($row['nickname']); ?></td>
+                        <td><?php echo escapeCharater($row['ctrl_right']); ?></td>
+                    </tr> -->
+                    <div class='role_row'>
+                        <div class='role_col'>
+                            <?php echo escapeCharater($row['username']); ?>
                         </div>
-                        <div class='card__body'>
-                            <div class='card__info'>
-                                <span class='card__author'>
-                                    <?php echo escapeCharater($row['nickname']); ?>
-                                    (@<?php echo escapeCharater($row['username']); ?>)
-                                </span>
-                                <span class='card__date'><?php echo escapeCharater($row['created_at']); ?></span>
-                                <?php if($row['username'] === $username || $ctrl_right == 2){ ?>
-                                    <a href="update_comment.php?id=<?php echo $row['id']; ?>">編輯</a>
-                                    <a href="handle_delete_comment.php?id=<?php echo $row['id']; ?>">刪除</a>
-                                <?php } ?>
-                            </div>
-                            <p class='card__content'>
-                                <?php echo escapeCharater($row['content']); ?>
-                            </p>
+                        <div class='role_col'>
+                            <?php echo escapeCharater($row['nickname']); ?>
                         </div>
+                        <div class='role_col'>
+                            <form method='POST' action='handle_edit_user.php'>
+                                <select name='ctrl_right_<?php echo escapeCharater($row['username']); ?>'>
+                                    <?php 
+                                        for($i=0; $i<=2; $i++){
+                                            if($i == $row['ctrl_right']){
+                                                echo "<option value=".$i." selected>".$i."</option>";
+                                            }else{
+                                                echo "<option value=".$i.">".$i."</option>";
+                                            }
+                                        }
+                                    ?>
+                                    <!-- <option value="0">baned</option>
+                                    <option value="1">normal</option>
+                                    <option value="2">admin</option> -->
+                                </select>
+                                <input type='submit' <?php if($username == $row['username']) echo "disabled"; ?> />
+                                <input type='hidden' name='username' value='<?php echo escapeCharater($row['username']); ?>' />
+                            </form>
+                        </div>
+                        <!-- <div class='role_col'>
+                            <input type='submit' name='edit_<?php echo escapeCharater($row['username']); ?>' />
+                        </div> -->
                     </div>
                 <?php } ?>
             </section>
-            <div class='board__hr'></div>
+            <!-- <div class='board__hr'></div>
             <?php 
                 $sql = "SELECT COUNT(id) AS count FROM `comments` WHERE is_deleted is NULL ";
                 $stmt = $conn->prepare($sql);
@@ -146,19 +146,7 @@
                     <a href='index.php?page=<?php echo ($page+1)?>'>下一頁</a>
                     <a href='index.php?page=<?php echo $totol_page?>'>到末頁</a>
                 <?php } ?>
-            </div>
+            </div> -->
         </main>
-        <script>
-            try {
-                var btn = document.querySelector(".update-nickname");
-                btn.addEventListener('click', function(){
-                    var form = document.querySelector(".board__nickname_form");
-                    form.classList.toggle('hide');
-                })
-            } catch (e) {
-                console.log(e);
-                console.log("未登入所以找不到 class=update-nickname 的 button");
-            }
-        </script>
     </body>
 </html>
