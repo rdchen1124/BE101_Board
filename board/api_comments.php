@@ -6,10 +6,10 @@
 
     //for 翻頁功能
     $page = 1;
-    if(!empty($_GET['page'])){
-        $page = (int)$_GET['page'];
+    if(!empty($_POST['page'])){
+        $page = (int)$_POST['page'];
     }
-    $limit = 10;
+    $limit = 5;
     $offset = ($page-1)*$limit;
 
     // sql for 從 comments 資料表依 username 欄位關聯到 users 資料表，並取出對應 nickname
@@ -29,7 +29,6 @@
     $result = $stmt->get_result();
 
     $comments = array();
-
     while($row = $result->fetch_assoc()){
         array_push($comments, array(
             "id" => $row['id'],
@@ -39,9 +38,22 @@
             "created_at" => $row['created_at']
         ));
     }
+    //get count and calcute total page and send to api_demo.html
+    $sql = "SELECT COUNT(id) AS count FROM `comments` WHERE is_deleted IS NULL";
+    $stmt = $conn->prepare($sql);
+    $result = $stmt->execute();
+    if(!$result){
+        die('Error : ' . $conn->error);
+    }
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $count = $row['count'];
+    $total_page = ceil($count/$limit);
 
     $json_data =  array(
-        "comments" => $comments
+        "comments" => $comments,
+        "page" => $page,
+        "total_page" => $total_page
     );
     $response = json_encode($json_data);
 

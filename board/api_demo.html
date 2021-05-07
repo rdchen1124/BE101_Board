@@ -30,6 +30,8 @@
                 var res = this.response;
                 var data = JSON.parse(res);
                 var comments = data.comments;
+                var page = data.page;
+                var total_page = data.total_page;
                 //console.log(comments);
                 comments.forEach(comment => {
                     // console.log(comment.id);
@@ -53,6 +55,7 @@
                     `;
                     document.querySelector('section').appendChild(div);
                 });
+                //append '載入更多資料'按鈕, 判斷需用到 page < total_page
             }
         };
         xhr.send();
